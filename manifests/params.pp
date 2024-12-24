@@ -8,34 +8,34 @@ class udev::params {
   $udev_log     = 'err'
   $rules        = undef
 
-  case $::osfamily {
-    'debian': {
+  case $facts['os']['family'] {
+    'Debian': {
       $udev_package    = 'udev'
       $udevlogpriority = 'udevadm control --log-priority'
       $udevtrigger     = 'udevadm trigger --action=change'
 
-      if (versioncmp($::operatingsystemmajrelease, '11') >= 0) {
+      if (versioncmp($facts['os']['release']['major'], '11') >= 0) {
         $udevadm_path = '/usr/bin'
       } else {
         $udevadm_path = '/sbin'
       }
     }
-    'redhat': {
+    'RedHat': {
       $udevadm_path = '/sbin'
 
-      if $::operatingsystem == 'Fedora' {
-        if (versioncmp($::operatingsystemmajrelease,'20') >=0) {
+      if $facts['os']['name'] == 'Fedora' {
+        if (versioncmp($facts['os']['release']['major'], '20') >= 0) {
           $udev_package    = 'systemd'
           $udevtrigger     = 'udevadm trigger'
           $udevlogpriority = 'udevadm control --log-priority'
         }
         else {
-          fail("Module ${module_name} might not be supported on Fedora release ${::operatingsystemmajrelease}")
+          fail("Module ${module_name} might not be supported on Fedora release ${facts['os']['release']['major']}")
         }
       } else {
         $udevadm_path = '/sbin'
 
-        case $::operatingsystemmajrelease {
+        case $facts['os']['release']['major'] {
           '5': {
             $udev_package    = 'udev'
             $udevtrigger     = 'udevtrigger'
@@ -52,13 +52,13 @@ class udev::params {
             $udevlogpriority = 'udevadm control --log-priority'
           }
           default: {
-            fail("Module ${module_name} is not supported on RedHat release ${::operatingsystemmajrelease}")
+            fail("Module ${module_name} is not supported on RedHat release ${facts['os']['release']['major']}")
           }
         }
       }
     }
     default: {
-      fail("Module ${module_name} is not supported on ${::operatingsystem}")
+      fail("Module ${module_name} is not supported on ${facts['os']['name']}")
     }
   }
 }
