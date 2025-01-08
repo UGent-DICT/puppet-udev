@@ -32,9 +32,8 @@ class udev::params {
         else {
           fail("Module ${module_name} might not be supported on Fedora release ${facts['os']['release']['major']}")
         }
-      } else {
-        $udevadm_path = '/sbin'
-
+      }
+      else {
         case $facts['os']['release']['major'] {
           '5': {
             $udev_package    = 'udev'
